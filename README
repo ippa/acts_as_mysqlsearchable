@@ -1,0 +1,11 @@
+ActsAsMysqlsearchable
+=====================
+
+acts_as_mysqlsearchable makes MySQL fulltext search available directly in your models.
+
+Features:
+
+- Specify fields with "acts_as_mysqlsearchable :fields => [:title, :text]", make sure you have fulltextindex added on thoose columns!
+- Boolean search  (:in_boolean_mode => true)
+- Supports MySQLs query expansion (:with_query_expansion => true)
+
