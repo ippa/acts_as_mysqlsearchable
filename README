@@ -28,7 +28,7 @@ class Post < ActiveRecord::Base
 end
 
 [in your code/controller]
-@figters =  Post.find_by_contents("ruby")
+@posts =  Post.find_by_contents("ruby")
 
 [example#2 -- with pagination by will_paginate]
 Post.find_by_contents("ruby") do
@@ -39,5 +39,5 @@ end
 
 TODO:
 =====
-- Add weightss, so 1 columns match-score can become more important
+- Add weights, so 1 columns match-score can become more important
 
