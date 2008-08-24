@@ -10,6 +10,7 @@ Features:
 - Supports MySQLs query expansion (:with_query_expansion => true)
 - Better results then LIKE '%query%' matches
 - Simpler then ferret/ultrasphinx/<other external searchdaemons>
+- Exposes Rails 2.1 named scope
 
 Why:
 ===
@@ -35,6 +36,11 @@ Post.find_by_contents("ruby") do
   @posts = Post.paginate :page => params[:page]
   @total = Post.count
 end
+
+[example#3 -- using "with_contents" named_scope]
+scoped = Post.active
+scoped = Post.with_contents("ruby")
+@posts = scoped.all
 
 
 TODO:

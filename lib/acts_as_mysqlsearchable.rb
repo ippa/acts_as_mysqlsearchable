@@ -26,11 +26,15 @@ module ActiveRecord
           default_options.update(options)
 
           class_inheritable_accessor :acts_as_mysqlsearchable_options
-
+          
           include ActiveRecord::Acts::Mysqlsearchable::InstanceMethods
           extend ActiveRecord::Acts::Mysqlsearchable::SingletonMethods
           
           self.acts_as_mysqlsearchable_options = default_options
+          
+          if defined?(ActiveRecord::NamedScope)
+            named_scope :with_contents, lambda {|*args| search_scope(*args) }
+          end
         end
       end
       
@@ -38,9 +42,20 @@ module ActiveRecord
 
         # MYSQL STOPWORDS: http://dev.mysql.com/doc/refman/5.0/en/fulltext-stopwords.html
         def find_by_contents(query, options = {})
-          
+          with_scope(:find => options) do
+            with_scope(:find => search_scope(query, options = {})) do
+              if block_given?
+                yield
+              else
+                find(:all)
+              end
+            end
+          end
+        end
+        
+        def search_scope(query, options = {})
           fields = acts_as_mysqlsearchable_options[:fields].join(",")
-            
+          
           # MORE INFO - http://dev.mysql.com/doc/refman/5.0/en/fulltext-query-expansion.html
           expansion = acts_as_mysqlsearchable_options[:with_query_expansion] ? "WITH QUERY EXPANSION" : ""
 
@@ -64,21 +79,11 @@ module ActiveRecord
           end
 
           # Needs rails edge / 1.2+ to support scoping of :order.
-          default_scope = {
+          {
             :select => "#{calc} *, MATCH (#{fields}) AGAINST ('#{query}') AS #{acts_as_mysqlsearchable_options[:score_column]}",
             :conditions => "MATCH (#{fields}) AGAINST ('#{query}' #{mode} #{expansion})",
             :order => "#{acts_as_mysqlsearchable_options[:score_column]} DESC",
           }
-          
-          with_scope(:find => options) do
-            with_scope(:find => default_scope) do
-              if block_given?
-                yield
-              else
-                find(:all)
-              end
-            end
-          end
         end
       end
       
