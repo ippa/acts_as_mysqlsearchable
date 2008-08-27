@@ -44,8 +44,8 @@ scoped = Post.with_contents("ruby")
 
 
 CREDITS:
-=======
-http://github.com/railsgarden (named_scope stuff)
+====
+- http://github.com/railsgarden (named_scope stuff)
 
 
 TODO:
