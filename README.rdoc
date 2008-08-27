@@ -1,0 +1,54 @@
+ActsAsMysqlsearchable
+=====================
+
+acts_as_mysqlsearchable makes MySQL fulltext search easy available directly in your models.
+
+Features:
+========
+- Specify fields with "acts_as_mysqlsearchable :fields => [:title, :text]", make sure you have fulltextindex added on thoose columns!
+- Boolean search  (:in_boolean_mode => true)
+- Supports MySQLs query expansion (:with_query_expansion => true)
+- Better results then LIKE '%query%' matches
+- Simpler then ferret/ultrasphinx/<other external searchdaemons>
+- Exposes Rails 2.1 named scope
+
+Why:
+===
+Because often MySQLs fulltext search is just enough for your case. It roughly sorts results after best match and it has various options like +/- etc.
+
+
+Notes:
+=====
+You'll need a MySQL fulltext index on the columns in your database since this plugin uses MySQLs builtin MATCH()
+
+Example:
+=======
+[in your model]
+class Post < ActiveRecord::Base
+  acts_as_mysqlsearchable :fields => [:title, :header, :text] rescue nil
+end
+
+[in your code/controller]
+@posts =  Post.find_by_contents("ruby")
+
+[example#2 -- with pagination by will_paginate]
+Post.find_by_contents("ruby") do
+  @posts = Post.paginate :page => params[:page]
+  @total = Post.count
+end
+
+[example#3 -- using "with_contents" named_scope]
+scoped = Post.active
+scoped = Post.with_contents("ruby")
+@posts = scoped.all
+
+
+CREDITS:
+=======
+http://github.com/railsgarden (named_scope stuff)
+
+
+TODO:
+=====
+- Add weights, so 1 columns match-score can become more important
+
